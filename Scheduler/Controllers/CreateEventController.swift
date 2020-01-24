@@ -19,13 +19,13 @@ class CreateEventController: UIViewController {
   @IBOutlet weak var datePicker: UIDatePicker!
   @IBOutlet weak var eventButton: UIButton!
   
-  public var event: Event? 
+  public var event: Event?
   
   // private for setting
   // public for getting
   public private(set) var eventState = EventState.newEvent
   
-  override func viewDidLoad() {
+  override func viewDidLoad() { // gets called once on intial load of view controller
     super.viewDidLoad()
     
     // set the view controller as the delegate for the text field
@@ -33,6 +33,14 @@ class CreateEventController: UIViewController {
         
     updateUI()
   }
+    
+    override func viewWillAppear(_ animated: Bool) { // every time view controller is on screen
+        super.viewWillAppear(true)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+    }
    
   private func updateUI() {
     if let event = event { // coming from didSelectRowAt (existing event)

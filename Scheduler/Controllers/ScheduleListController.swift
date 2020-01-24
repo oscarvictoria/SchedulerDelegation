@@ -15,7 +15,8 @@ class ScheduleListController: UIViewController {
     // data - an array of events
     private var events = [Event]()
     
-    public let dataPersistence = DataPersistence(filename: "schedules.plist")
+    public let dataPersistance = DataPersistence<Event>(filename: "schedules.plist")
+//  public let dataPersistence = DataPersistence(filename: "schedules.plist") // We need this for cutom delegation
     
     private var isEditingTableView = false {
         didSet { // property observer
@@ -47,7 +48,7 @@ class ScheduleListController: UIViewController {
     
     private func loadItems() {
         do {
-            events = try dataPersistence.loadItems()
+            events = try dataPersistance.loadItems()
             tableView.reloadData()
         } catch {
             print("loading items error: \(error)")
@@ -77,8 +78,13 @@ class ScheduleListController: UIViewController {
     
     private func update(oldEvent: Event, with newEvent: Event) {
         // update item in documents directory
+        dataPersistance.update(oldEvent, with: newEvent)
         
         // call load items to update events array
+        // retrieve obkects from documents directory
+        // append to our events array
+        // reload the table view
+        loadItems()
     }
     
     private func createNewEvent(event: Event) {
@@ -95,7 +101,7 @@ class ScheduleListController: UIViewController {
         // use indexPath to insert into table view
         tableView.insertRows(at: [indexPath], with: .automatic)
         
-        try? dataPersistence.createItem(event)
+        try? dataPersistance.createItem(event)
     }
     
     @IBAction func editButtonPressed(_ sender: UIBarButtonItem) {
@@ -156,7 +162,7 @@ extension ScheduleListController: UITableViewDataSource {
             events.remove(at: indexPath.row) // remove event from events array
             
             // remvoe item from documents directory
-            try? dataPersistence.deleteItem(at: indexPath.row)
+            try? dataPersistance.deleteItem(at: indexPath.row)
             
             // 2. update the table view
             tableView.deleteRows(at: [indexPath], with: .automatic)
@@ -172,7 +178,7 @@ extension ScheduleListController: UITableViewDataSource {
         events.insert(eventToMove, at: destinationIndexPath.row)
         
         // re-save array in docuemnts directory
-        dataPersistence.synchronize(events)
+        dataPersistance.synchronize(events)
         
         loadItems()
     }
